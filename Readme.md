@@ -1,8 +1,9 @@
 Join multiple lines
-~~~~~~~~~~~~~~~~~~~
+===================
 By Daan Goedkoop
 
-INTRODUCTION
+Introduction
+------------
 
 After selecting multiple features of a line layer, this plugin can merge
 them into one feature with a continuous line.
@@ -13,7 +14,8 @@ exactly, a line segment between both points is added to make the end result
 a single, continuous line. The attributes of the new line will be those of
 one of the selected features, but one cannot predict which one.
 
-TESTING
+Testing
+-------
 
 I've developed this plugin up to version 0.2 for use during an internship,
 where we sometimes wanted to merge many hundreds of short line segments into
@@ -29,18 +31,20 @@ intersection. This plugin can handle any number of lines and can handle
 situations where lines have a common vertex or not, but with intersecting
 lines it will produce an invalid geometry.
 
-VERSION HISTORY
+Version history
+---------------
 
-0.1: 26-04-2013
-     initial version
-0.2: 29-04-2013
-     Produce valid geometry if begin and end vertices are identical.
-0.3: 03-02-2014
-     Update for QGis 2.0
-     Operation is now a single undo/redo-step, instead of having a
-     separate step for the removal of the superfluous features.
+* 0.1: 26-04-2013
+     * Initial version
+* 0.2: 29-04-2013
+     * Produce valid geometry if begin and end vertices are identical.
+* 0.3: 03-02-2014
+     * Update for QGis 2.0
+     * Operation is now a single undo/redo-step, instead of having a
+       separate step for the removal of the superfluous features.
 
-LICENSE
+License
+-------
 
 Copyricht (c) Daan Goedkoop, 2013-2014
 All rights reserved.

@@ -7,3 +7,6 @@ author=Daan Goedkoop
 email=dgoedkoop@gmx.net
 icon=icon.png
 qgisMinimumVersion=2.0.0
+repository=https://github.com/dgoedkoop/joinmultiplelines
+tracker=https://github.com/dgoedkoop/joinmultiplelines/issues
+homepage=https://github.com/dgoedkoop/joinmultiplelines
