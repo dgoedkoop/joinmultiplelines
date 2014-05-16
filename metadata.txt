@@ -1,0 +1,9 @@
+[general]
+name=Join multiple lines
+description=Permanently join multiple lines
+category=Vector
+version=Version 0.3
+author=Daan Goedkoop
+email=dgoedkoop@gmx.net
+icon=icon.png
+qgisMinimumVersion=2.0.0
