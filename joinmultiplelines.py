@@ -5,7 +5,7 @@
 # Author:      Daan Goedkoop
 #
 # Created:     26-04-2013
-# Copyright:   (c) Daan Goedkoop 2013-2014
+# Copyright:   (c) Daan Goedkoop 2013-2018
 # Licence:     All rights reserved.
 #
 #              Redistribution and use in source and binary forms, with or
@@ -41,14 +41,21 @@
 #              Update for QGis 2.0
 #              Operation is now a single undo/redo-step, instead of having a
 #                  separate step for the removal of the superfluous features.
+#         0.4: 22.01.2018
+#              Update for QGis 3.0
+#              Support multi-part lines
 #-------------------------------------------------------------------------------
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtWidgets import QAction
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import QgsMessageBar
 
 # initialize Qt resources from file resouces.py
+import sys
+import os.path
+sys.path.append(os.path.dirname(__file__))
 import resources
 
 class joinmultiplelines:
@@ -61,7 +68,7 @@ class joinmultiplelines:
         self.action.setWhatsThis("Permanently join multiple lines")
         self.action.setStatusTip("Permanently join multiple lines (removes lines used for joining)")
 
-        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
+        self.action.triggered.connect(self.run)
 
         if hasattr( self.iface, "addPluginToVectorMenu" ):
             self.iface.addVectorToolBarIcon(self.action)
@@ -79,7 +86,7 @@ class joinmultiplelines:
             self.iface.removeToolBarIcon(self.action)
 
     def Distance(self, vertex1, vertex2):
-        return vertex1.sqrDist(vertex2)
+        return vertex1.distanceSquared(vertex2)
 
     def FirstVertex(self, geom):
         return geom.vertexAt(0)
@@ -89,15 +96,6 @@ class joinmultiplelines:
 
     def LastVertex(self, geom):
         return geom.vertexAt(self.LastVertexIndex(geom))
-
-    # First: GEOM does not check for duplicate vertices or intersecting lines.
-	# Second: QGis does, and simply uses '==' when comparing coordinates.
-	# However, if we use '==' here too (likewise when using the '==' operator
-	# for vertices), it will sometimes return "false" when the validity check
-	# in QGis would return "true". That's the reason for this function.
-    def PointEquality(self, vertex1, vertex2):
-        return ((abs(vertex1.x() - vertex2.x()) < 0.000001) and
-                (abs(vertex1.y() - vertex2.y()) < 0.000001))
 
     def Step(self, geom, queue_list):
         if geom is None:
@@ -138,16 +136,18 @@ class joinmultiplelines:
                 found_i_reverse = i_reverse
         if found_geom is not None:
             queue_list.remove(found_geom)
-            base_pts = geom.asPolyline()
-            found_pts = found_geom.asPolyline()
+            geom_line = geom.constGet()
+            found_geom_line = found_geom.constGet()
             if found_base_reverse:
-                base_pts.reverse()
+                geom_line = geom_line.reversed()
             if found_i_reverse:
-                found_pts.reverse()
-            if self.PointEquality(base_pts[-1], found_pts[0]):
-                base_pts.pop()
-            base_pts.extend(found_pts)
-            return QgsGeometry.fromPolyline(base_pts)
+                found_geom_line = found_geom_line.reversed()
+            # .append automatically takes care not to create a duplicate
+            # vertex when the last respectively first vertex of the two
+            # segments are identical.
+            geom_line.append(found_geom_line)
+            geom.set(geom_line)
+            return geom
         else:
             return None
 
@@ -160,7 +160,7 @@ class joinmultiplelines:
         if (cl.type() != cl.VectorLayer):
             self.iface.messageBar().pushMessage("Join multiple lines","Not a vector layer", QgsMessageBar.WARNING, 10)
             return
-        if cl.geometryType() != QGis.Line:
+        if cl.geometryType() != QgsWkbTypes.LineGeometry:
             self.iface.messageBar().pushMessage("Join multiple lines","Not a line layer", QgsMessageBar.WARNING, 10)
             return
 
@@ -173,9 +173,10 @@ class joinmultiplelines:
         for feat in selfeats:
             geom = QgsGeometry(feat.geometry())
             if geom.isMultipart():
-                self.iface.messageBar().pushMessage("Join multiple lines","Multipart lines are not supported.", QgsMessageBar.WARNING, 10)
-                return
-            geomlist.append(geom)
+                for geom_i in geom.asGeometryCollection():
+                    geomlist.append(geom_i)
+            else:
+                geomlist.append(geom)
 
         newgeom = None
         while len(geomlist) > 0:
@@ -184,8 +185,6 @@ class joinmultiplelines:
         cl.startEditing()
         cl.beginEditCommand( "Join multiple lines" )
         cl.changeGeometry( selfeats[0].id(), newgeom )
-#        cl.endEditCommand()
-#        cl.beginEditCommand( "Delete feature" )
         for feat in selfeats:
             if feat != selfeats[0]:
                 cl.deleteFeature( feat.id() )

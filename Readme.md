@@ -17,19 +17,8 @@ one of the selected features, but one cannot predict which one.
 Testing
 -------
 
-I've developed this plugin up to version 0.2 for use during an internship,
-where we sometimes wanted to merge many hundreds of short line segments into
-one continuous line feature. That version, in combination with QGis 1.8, has
-thus been tested quite intensively. This is an adaptation for QGis 2.0.
-
 A test project / layer has been supplied to experiment with and see the
 characteristics of the plugin.
-
-This plugin is different from the "Join Lines" plugin that already exists.
-That plugin can handle only two lines at once, and needs a common vertex or
-intersection. This plugin can handle any number of lines and can handle
-situations where lines have a common vertex or not, but with intersecting
-lines it will produce an invalid geometry.
 
 Version history
 ---------------
@@ -42,11 +31,14 @@ Version history
      * Update for QGis 2.0
      * Operation is now a single undo/redo-step, instead of having a
        separate step for the removal of the superfluous features.
+* 0.4: 22-01-2018
+     * Update for QGis 3.0
+     * Support multi-part lines
 
 License
 -------
 
-Copyricht (c) Daan Goedkoop, 2013-2014
+Copyricht (c) Daan Goedkoop, 2013-2018
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or
