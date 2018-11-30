@@ -34,3 +34,5 @@ Version history
 * 0.4: 22-01-2018
      * Update for QGis 3.0
      * Support multi-part lines
+* 0.4.1: 30-11-2018
+     * Bug fix for displaying warnings

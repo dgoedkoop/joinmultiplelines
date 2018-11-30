@@ -41,9 +41,11 @@
 #              Update for QGis 2.0
 #              Operation is now a single undo/redo-step, instead of having a
 #                  separate step for the removal of the superfluous features.
-#         0.4: 22.01.2018
+#         0.4: 22-01-2018
 #              Update for QGis 3.0
 #              Support multi-part lines
+#         0.4.1: 22.01.2018
+#              Bug fix for displaying warnings
 #-------------------------------------------------------------------------------
 
 from PyQt5.QtWidgets import QAction
@@ -155,18 +157,18 @@ class joinmultiplelines:
         cl = self.iface.mapCanvas().currentLayer()
 
         if (cl == None):
-            self.iface.messageBar().pushMessage("Join multiple lines","No layers selected", QgsMessageBar.WARNING, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines","No layers selected", Qgis.Warning, 10)
             return
         if (cl.type() != cl.VectorLayer):
-            self.iface.messageBar().pushMessage("Join multiple lines","Not a vector layer", QgsMessageBar.WARNING, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines","Not a vector layer", Qgis.Warning, 10)
             return
         if cl.geometryType() != QgsWkbTypes.LineGeometry:
-            self.iface.messageBar().pushMessage("Join multiple lines","Not a line layer", QgsMessageBar.WARNING, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines","Not a line layer", Qgis.Warning, 10)
             return
 
         selfeats = cl.selectedFeatures()
         if (len(selfeats) < 2):
-            self.iface.messageBar().pushMessage("Join multiple lines","At least two lines should be selected", QgsMessageBar.WARNING, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines","At least two lines should be selected", Qgis.Warning, 10)
             return
 
         geomlist = []

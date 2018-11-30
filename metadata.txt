@@ -4,7 +4,7 @@ description=Permanently join multiple lines
 about=After selecting multiple features of a line layer, this plugin can merge them into one feature with a continuous line.
     The plugin will automatically put the selected lines in a geographically logical order and direction. If the end points of two lines do not match exactly, a line segment between both points is added to make the end result a single, continuous line. The attributes of the new line will be those of one of the selected features, but one cannot predict which one.
 category=Vector
-version=Version 0.4
+version=Version 0.4.1
 author=Daan Goedkoop
 email=dgoedkoop@gmx.net
 icon=icon.png
