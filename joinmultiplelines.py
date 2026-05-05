@@ -57,8 +57,8 @@ from qgis.gui import QgsMessageBar
 # initialize Qt resources from file resouces.py
 import sys
 import os.path
-sys.path.append(os.path.dirname(__file__))
-import resources
+
+from . import resources
 
 class joinmultiplelines:
     def __init__(self, iface):
