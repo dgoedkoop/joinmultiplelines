@@ -5,7 +5,7 @@
 # Author:      Daan Goedkoop
 #
 # Created:     26-04-2013
-# Copyright:   (c) Daan Goedkoop 2013-2018
+# Copyright:   (c) Daan Goedkoop 2013-2026
 # Licence:     All rights reserved.
 #
 #              Redistribution and use in source and binary forms, with or
@@ -46,19 +46,17 @@
 #              Support multi-part lines
 #         0.4.1: 22.01.2018
 #              Bug fix for displaying warnings
+#         1.0: 03-06-2026
+#              Update for QGis 4.0
 #-------------------------------------------------------------------------------
 
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from qgis.core import *
-from qgis.gui import QgsMessageBar
+from PyQt6.QtCore import *
+from PyQt6.QtGui import QAction, QIcon
+from qgis.core import QgsWkbTypes, QgsGeometry, Qgis
+from pathlib import Path
 
-# initialize Qt resources from file resouces.py
-import sys
-import os.path
-sys.path.append(os.path.dirname(__file__))
-import resources
+# Alternative for resource file, see https://lists.osgeo.org/pipermail/qgis-developer/2026-January/067968.html
+DIR_PLUGIN_ROOT = Path(__file__).parent
 
 class joinmultiplelines:
     def __init__(self, iface):
@@ -66,7 +64,7 @@ class joinmultiplelines:
         self.iface = iface
 
     def initGui(self):
-        self.action = QAction(QIcon(":/plugins/joinmultiplelines/icon.png"), "Join multiple lines", self.iface.mainWindow())
+        self.action = QAction(QIcon(str(DIR_PLUGIN_ROOT / "icon.png")), "Join multiple lines", self.iface.mainWindow())
         self.action.setWhatsThis("Permanently join multiple lines")
         self.action.setStatusTip("Permanently join multiple lines (removes lines used for joining)")
 
