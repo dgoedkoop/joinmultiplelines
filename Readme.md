@@ -36,3 +36,5 @@ Version history
      * Support multi-part lines
 * 0.4.1: 30-11-2018
      * Bug fix for displaying warnings
+* 0.4.2: 03-06-2026
+     * Fix possible loading of wrong icon (by Mothraa)
