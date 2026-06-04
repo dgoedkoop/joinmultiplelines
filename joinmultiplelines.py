@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:        joinmultiplelines
 # Purpose:     Join multiple lines into one continuous line
 #
@@ -48,19 +48,18 @@
 #              Bug fix for displaying warnings
 #         0.4.2: 03-06-2026
 #              Fix possible loading of wrong icon (by Mothraa)
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from qgis.core import *
 from qgis.gui import QgsMessageBar
+from pathlib import Path
 
-# initialize Qt resources from file resouces.py
-import sys
-import os.path
+# Alternative for resource file, see https://lists.osgeo.org/pipermail/qgis-developer/2026-January/067968.html
+DIR_PLUGIN_ROOT = Path(__file__).parent
 
-from . import resources
 
 class joinmultiplelines:
     def __init__(self, iface):
@@ -68,13 +67,14 @@ class joinmultiplelines:
         self.iface = iface
 
     def initGui(self):
-        self.action = QAction(QIcon(":/plugins/joinmultiplelines/icon.png"), "Join multiple lines", self.iface.mainWindow())
+        self.action = QAction(QIcon(str(DIR_PLUGIN_ROOT / "icon.png")),
+                              "Join multiple lines", self.iface.mainWindow())
         self.action.setWhatsThis("Permanently join multiple lines")
         self.action.setStatusTip("Permanently join multiple lines (removes lines used for joining)")
 
         self.action.triggered.connect(self.run)
 
-        if hasattr( self.iface, "addPluginToVectorMenu" ):
+        if hasattr(self.iface, "addPluginToVectorMenu"):
             self.iface.addVectorToolBarIcon(self.action)
             self.iface.addPluginToVectorMenu("&Join multiple lines", self.action)
         else:
@@ -82,11 +82,11 @@ class joinmultiplelines:
             self.iface.addPluginToMenu("&Join multiple lines", self.action)
 
     def unload(self):
-        if hasattr( self.iface, "addPluginToVectorMenu" ):
-            self.iface.removePluginVectorMenu("&Join multiple lines",self.action)
+        if hasattr(self.iface, "addPluginToVectorMenu"):
+            self.iface.removePluginVectorMenu("&Join multiple lines", self.action)
             self.iface.removeVectorToolBarIcon(self.action)
         else:
-            self.iface.removePluginMenu("&Join multiple lines",self.action)
+            self.iface.removePluginMenu("&Join multiple lines", self.action)
             self.iface.removeToolBarIcon(self.action)
 
     def Distance(self, vertex1, vertex2):
@@ -158,19 +158,19 @@ class joinmultiplelines:
     def run(self):
         cl = self.iface.mapCanvas().currentLayer()
 
-        if (cl == None):
-            self.iface.messageBar().pushMessage("Join multiple lines","No layers selected", Qgis.Warning, 10)
+        if (cl is None):
+            self.iface.messageBar().pushMessage("Join multiple lines", "No layers selected", Qgis.Warning, 10)
             return
         if (cl.type() != cl.VectorLayer):
-            self.iface.messageBar().pushMessage("Join multiple lines","Not a vector layer", Qgis.Warning, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines", "Not a vector layer", Qgis.Warning, 10)
             return
         if cl.geometryType() != QgsWkbTypes.LineGeometry:
-            self.iface.messageBar().pushMessage("Join multiple lines","Not a line layer", Qgis.Warning, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines", "Not a line layer", Qgis.Warning, 10)
             return
 
         selfeats = cl.selectedFeatures()
         if (len(selfeats) < 2):
-            self.iface.messageBar().pushMessage("Join multiple lines","At least two lines should be selected", Qgis.Warning, 10)
+            self.iface.messageBar().pushMessage("Join multiple lines", "At least two lines should be selected", Qgis.Warning, 10)
             return
 
         geomlist = []
@@ -187,11 +187,11 @@ class joinmultiplelines:
             newgeom = self.Step(newgeom, geomlist)
 
         cl.startEditing()
-        cl.beginEditCommand( "Join multiple lines" )
-        cl.changeGeometry( selfeats[0].id(), newgeom )
+        cl.beginEditCommand("Join multiple lines")
+        cl.changeGeometry(selfeats[0].id(), newgeom)
         for feat in selfeats:
             if feat != selfeats[0]:
-                cl.deleteFeature( feat.id() )
+                cl.deleteFeature(feat.id())
 
         cl.endEditCommand()
         self.iface.mapCanvas().refresh()
